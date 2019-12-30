@@ -30,14 +30,12 @@ docker-compose up
 
 访问<http://localhost:7474> 账号：neo4j 密码：neo4j 进入neo4j，修改密码为123456，不修改密码，无法通过api链接到neo4j
 
-## 第三步：配置安装api
+## 第四步：配置安装
 
 ### 1、配置`.env`
+以下配置已经设置好，直接复制替换 `.env` 文件原有配置即可。
 
 * 修改数据库配置
-* 修改redis配置
-* 修改neo4j配置
-
 ```
 DB_CONNECTION=default
 DB_HOST=mysql
@@ -45,16 +43,21 @@ DB_PORT=3306
 DB_DATABASE=ecshopx
 DB_USERNAME=root
 DB_PASSWORD=root
-
+```
+* 修改redis配置
+```
+REDIS_CLIENT=predis
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_PASSWORD=123456
+```
+* 修改neo4j配置
+```
 NEO4J_DEFAULT_PROTOCOL=http
 NEO4J_DEFAULT_HOST=neo4j
 NEO4J_DEFAULT_PORT=7474
 NEO4J_DEFAULT_USERNAME=neo4j
 NEO4J_DEFAULT_PASSWORD=123456
-
-REDIS_CLIENT=predis
-REDIS_HOST=redis
-REDIS_PASSWORD=123456
 ```
 
 ### 2、composer&&migrate
@@ -74,11 +77,23 @@ composer install
 ./artisan doctrine:migrations:migrate
 ```
 
+### 3、配置管理端 api 地址
+在 `ecshopx-admin/app/config/dev.env.js` 中配置后端 api 地址：
+
+```js
+BASE_API: '"api"',
+```
+```shell
+#查看web容器名称
+docker ps | grep ecshop-admin-build
+#查看日志
+docker logs ecshopx-dev-docker_ecshop-admin-build_1 
+```
+在访问环境前，请先确认管理端代码是否编译完成
 
 ## 访问环境
 
 在完成以上几步之后，就可以访问开发环境了，具体访问地址如下：
-> 在访问环境前，请先确认管理端代码是否编译完成,可通过 docker logs ecshopx-dev-docker_ecshop-admin-build_1 查看编译进度
 
 | 项目 | 地址 | 
 | - | - |
