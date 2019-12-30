@@ -83,13 +83,15 @@ composer install
 ```js
 BASE_API: '"api"',
 ```
+
+在访问环境前，请先确认管理端代码是否编译完成
 ```shell
-#查看web容器名称
+#查看管理端容器名称
 docker ps | grep ecshop-admin-build
 #查看日志
 docker logs ecshopx-dev-docker_ecshop-admin-build_1 
 ```
-在访问环境前，请先确认管理端代码是否编译完成
+
 
 ## 访问环境
 
