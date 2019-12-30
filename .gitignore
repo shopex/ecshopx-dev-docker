@@ -1,0 +1,9 @@
+*.swp
+*.log
+*~
+\.#*
+\#*
+ecshopx-admin
+ecshopx-api
+data
+docker-compose.test.yml
