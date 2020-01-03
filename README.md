@@ -16,9 +16,28 @@ cd ecshopx-dev-docker
 ```
 
 ## 第一步：初始化代码
-将管理端的代码 git clone 到 ecshopx-admin 目录中
+将管理端的代码(espier-bloated)复制到 ecshopx-admin 目录中
 
-将api端的代码 git clone 到 ecshopx-api 目录中
+将api端的代码(espier-retail-mange)复制到到 ecshopx-api 目录中
+
+完成后目录结构如下：
+
+```shell
+ecshopx-dev-docker
+    ├── config
+    ├── data
+    ├── ecshop-admin
+    │   ├── app
+    │   └── docker
+    ├── ecshop-admin
+    │   ├── app  
+    │   ├── bootstrap
+    │   ├── config
+    │   ├── ...
+    │   └── README.md
+    ├── docker-compose.yml
+    └── README.md
+```
 ## 第二步：启动开发环境
 在ecshopx-dev-docker下执行
 ```
@@ -91,6 +110,7 @@ docker ps | grep ecshop-admin-build
 #查看日志
 docker logs ecshopx-dev-docker_ecshop-admin-build_1 
 ```
+> 如果看不到 ecshopx-dev-docker_ecshop-admin-build_1 说明编译出错，可以Ctrl+C 关闭 docker-compose，然后再重新启动 docker-compose up
 
 
 ## 访问环境
