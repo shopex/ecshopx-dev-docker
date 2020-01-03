@@ -18,9 +18,9 @@ cd ecshopx-dev-docker
 ## 第一步：初始化代码
 在 ecshopx-dev-docker 目录下新建 ecshopx-admin 和 ecshopx-api 目录。
 
-将管理端的代码(espier-bloated)复制到 ecshopx-admin 目录中
+将管理端的代码(espier-retail-mange)复制到 ecshopx-admin 目录中
 
-将api端的代码(espier-retail-mange)复制到到 ecshopx-api 目录中
+将api端的代码(espier-bloated)复制到到 ecshopx-api 目录中
 
 完成后目录结构如下：
 
