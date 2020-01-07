@@ -102,30 +102,18 @@ NEO4J_DEFAULT_PASSWORD=123456
 
 由于 API 的环境在 docker 的容器内，所以开发时，需要进入到容器中来执行相关命令。
 
-我们可以通过以下命令查看web容器名称：
-```shell
-docker ps | grep espier-bloated-web
-```
-> espier-bloated-web 是在 docker-compose.yml 中定义的服务的名称
-
-如果没问题，可以看下以下信息：
-```shell
-55763c866ca7  hub.ishopex.cn/espier-docker-library/php:7.2-composer-alpine3.10   "php-fpm"                2 hours ago         Up 2 hours          9000/tcp, 0.0.0.0:8085->8005/tcp                           ecshopx-dev-docker_espier-bloated-web_1
-```
-`ecshopx-dev-docker_espier-bloated-web_1` 就是实际运行的容器的名称。
-
-通过以下命令进入容器
+#### 进入容器
 ```shell
 docker exec -it ecshopx-dev-docker_espier-bloated-web_1 sh 
 ```
 进入容器之后，会自动进入代码目录 `/app`，所以可以直接运行命令：
 
-安装依赖
+#### 安装依赖
 ```
 composer install
 ```
 
-初始化数据库表
+#### 初始化数据库表
 ```
 php ./artisan doctrine:migrations:migrate
 ```
@@ -153,7 +141,9 @@ ecshop-admin-build_1  | > Listening at http://localhost:4000
 ```shell
 docker start ecshopx-dev-docker_ecshop-admin-build_1
 ```
+
 在完成以上几步之后，就可以访问开发环境了，具体访问地址如下：
+
 | 项目 | 地址 | 
 | - | - |
 | 管理端 | <http://127.0.0.1:8080/> | 
@@ -162,4 +152,15 @@ docker start ecshopx-dev-docker_ecshop-admin-build_1
 | phpmyadmin | <http://127.0.0.1:8004> | 
 | neo4j | <http://127.0.0.1:7474> |
 
+## 补充信息
+我们可以通过以下命令查看web容器名称：
+```shell
+docker ps | grep espier-bloated-web
+```
+> espier-bloated-web 是在 docker-compose.yml 中定义的服务的名称
 
+如果没问题，可以看下以下信息：
+```shell
+55763c866ca7  hub.ishopex.cn/espier-docker-library/php:7.2-composer-alpine3.10   "php-fpm"                2 hours ago         Up 2 hours          9000/tcp, 0.0.0.0:8085->8005/tcp                           ecshopx-dev-docker_espier-bloated-web_1
+```
+`ecshopx-dev-docker_espier-bloated-web_1` 就是实际运行的容器的名称。
