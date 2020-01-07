@@ -16,7 +16,7 @@ services:
       - ecshop-admin-build
     volumes:
       - "./config/nginx/default.conf:/etc/nginx/conf.d/default.conf"
-      - "./espier-retail-mange/app/dist/star:/usr/share/nginx/html"
+      - "./espier-retail-manage/app/dist/star:/usr/share/nginx/html"
     networks:
       - webnet
 
@@ -100,7 +100,7 @@ services:
       - sh 
       - /usr/share/nginx/html/docker/build_dev.sh
     volumes:
-      - "./espier-retail-mange:/usr/share/nginx/html"
+      - "./espier-retail-manage:/usr/share/nginx/html"
     networks:
       - webnet
 #- "./bloated/files/scheduler/crontabs/root:/var/spool/cron/crontabs/root"
