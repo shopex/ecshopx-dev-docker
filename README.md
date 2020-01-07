@@ -57,7 +57,7 @@ docker-compose up
 ### 创建 MySQL 数据库
 为保证安装环境的统一性，本环境自带了 `phpmyadmin`，账号密码为: root root 。
 
-现在我们要创建程序需要的数据，访问<http://localhost:8004> 。进入 phpmyadmin ，创建项目数据库 `ecshopx` ，字符集选用 `utf8mb4_general_ci`
+现在我们要创建程序需要的数据库，访问<http://localhost:8004> 。进入 phpmyadmin ，创建项目数据库 `ecshopx` ，字符集选用 `utf8mb4_general_ci`
 
 > 在开发过程中，也可使用其他数据库工具创建数据库，连接地址为：localhost:8806
 
@@ -72,7 +72,7 @@ docker-compose up
 ### 1、配置`.env`
 代码中不包`.env`，可以将 `.env.production` 复制改名为 `.env`。
 
-如果，你完全按照第二步来配置数据库，以下配置已经设置好，直接复制替换 `.env` 文件原有配置即可。
+如果你完全按照第二步来配置数据库，以下配置可以直接复制替换 `.env` 原有配置。
 * 修改数据库配置
 ```
 DB_CONNECTION=default
@@ -100,21 +100,35 @@ NEO4J_DEFAULT_PASSWORD=123456
 
 ### 2、composer&&migrate
 
-进入容器
+由于 API 的环境在 docker 的容器内，所以开发时，需要进入到容器中来执行相关命令。
+
+我们可以通过以下命令查看web容器名称：
 ```shell
-#查看web容器名称
-docker ps | grep web
-#进入容器
+docker ps | grep espier-bloated-web
+```
+> espier-bloated-web 是在 docker-compose.yml 中定义的服务的名称
+
+如果没问题，可以看下以下信息：
+```shell
+55763c866ca7  hub.ishopex.cn/espier-docker-library/php:7.2-composer-alpine3.10   "php-fpm"                2 hours ago         Up 2 hours          9000/tcp, 0.0.0.0:8085->8005/tcp                           ecshopx-dev-docker_espier-bloated-web_1
+```
+`ecshopx-dev-docker_espier-bloated-web_1` 就是实际运行的容器的名称。
+
+通过以下命令进入容器
+```shell
 docker exec -it ecshopx-dev-docker_espier-bloated-web_1 sh 
 ```
+进入容器之后，会自动进入代码目录 `/app`，所以可以直接运行命令：
 
-进入容器之后，会直接进入代码目录 `/app`，所以可以直接运行以下命令：
-
+安装依赖
 ```
 composer install
-php ./artisan doctrine:migrations:migrate
 ```
 
+初始化数据库表
+```
+php ./artisan doctrine:migrations:migrate
+```
 
 ## 访问环境
 
@@ -125,7 +139,7 @@ docker ps | grep ecshop-admin-build
 #查看日志
 docker logs ecshopx-dev-docker_ecshop-admin-build_1 
 ```
-如过有看到:
+如过有看到以下信息，说明管理端已经编译启动完成：
 ```shell
 ecshop-admin-build_1  | > espier@1.0.0 dev /usr/share/nginx/html/app
 ecshop-admin-build_1  | > node build/dev-server.js
