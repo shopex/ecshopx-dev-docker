@@ -90,12 +90,13 @@ services:
       - webnet    
 
   ecshop-admin-build:
-    image: node:8-alpine
+    image: node:12-alpine
     environment:
       PRODUCT_MODEL: standard
       IS_SAAS: "false"
       PORT: 4000
       BUILD_DIR: /usr/share/nginx/html/app
+      NPM_CACHE_DIR: /tmp
     entrypoint:
       - sh 
       - /usr/share/nginx/html/docker/build_dev.sh
