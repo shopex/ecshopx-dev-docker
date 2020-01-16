@@ -17,17 +17,16 @@ cd ecshopx-dev-docker
 
 ## 第一步：初始化代码
 
-将管理端的代码复制到 espier-retail-mange 目录中
+将管理端的代码复制到 espier-retail-manage 目录中
 
 将api端的代码复制到到 espier-bloated 目录中
 
 完成后目录结构如下：
-
 ```shell
 ecshopx-dev-docker
     ├── config
     ├── data
-    ├── espier-retail-mange
+    ├── espier-retail-manage
     │   ├── app
     │   └── docker
     ├── espier-bloated
@@ -39,22 +38,41 @@ ecshopx-dev-docker
     ├── docker-compose.yml
     └── README.md
 ```
+### 配置管理端 api 地址
+在 `espier-retail-manage/app/config/dev.env.js` 中配置后端 api 地址：
+
+```js
+BASE_API: '"api"',
+```
 ## 第二步：启动开发环境
 在ecshopx-dev-docker下执行
 ```
 docker-compose up
 ```
 
-## 第三步：创建数据库
-访问<http://localhost:8004> 账号：root 密码：root 。进入phpmyadmin，创建项目数据库ecshopx。也可使用其他数据库工具创建数据库，连接地址为：localhost:8806
+> 第一次启动时，需要通过 docker pull 拉去镜像到本地，所以需要等待一段时间
 
-访问<http://localhost:7474> 账号：neo4j 密码：neo4j 进入neo4j，修改密码为123456，不修改密码，无法通过api链接到neo4j
+## 第三步：配置数据库
+
+### 创建 MySQL 数据库
+为保证安装环境的统一性，本环境自带了 `phpmyadmin`，账号密码为: root root 。
+
+现在我们要创建程序需要的数据库，访问<http://localhost:8004> 。进入 phpmyadmin ，创建项目数据库 `ecshopx` ，字符集选用 `utf8mb4_general_ci`
+
+> 在开发过程中，也可使用其他数据库工具创建数据库，连接地址为：localhost:8806
+
+### 修改 Neo4j 密码
+由于 Neo4j 不修改密码，无法通过 API 访问。所以我们需要通过浏览器客户端修改 Neo4j 的密码。
+
+访问<http://localhost:7474> 输入账号密码： `neo4j`  `neo4j`。 登录后会进入重置密码的页面，输入两遍新密码： `123456`，点击确认即可。
+
 
 ## 第四步：配置安装
 
 ### 1、配置`.env`
-以下配置已经设置好，直接复制替换 `.env` 文件原有配置即可。
+代码中不包`.env`，可以将 `.env.production` 复制改名为 `.env`。
 
+如果你完全按照第二步来配置数据库，以下配置可以直接复制替换 `.env` 原有配置。
 * 修改数据库配置
 ```
 DB_CONNECTION=default
@@ -82,27 +100,25 @@ NEO4J_DEFAULT_PASSWORD=123456
 
 ### 2、composer&&migrate
 
+由于 API 的环境在 docker 的容器内，所以开发时，需要进入到容器中来执行相关命令。
 
+#### 进入容器
 ```shell
-#查看web容器名称
-docker ps | grep web
-#进入容器
 docker exec -it ecshopx-dev-docker_espier-bloated-web_1 sh 
 ```
+进入容器之后，会自动进入代码目录 `/app`，所以可以直接运行命令：
 
-进入容器之后：
-
+#### 安装依赖
 ```
 composer install
-./artisan doctrine:migrations:migrate
 ```
 
-### 3、配置管理端 api 地址
-在 `espier-retail-mange/app/config/dev.env.js` 中配置后端 api 地址：
-
-```js
-BASE_API: '"api"',
+#### 初始化数据库表
 ```
+php ./artisan doctrine:migrations:migrate
+```
+
+## 访问环境
 
 在访问环境前，请先确认管理端代码是否编译完成
 ```shell
@@ -111,10 +127,20 @@ docker ps | grep ecshop-admin-build
 #查看日志
 docker logs ecshopx-dev-docker_ecshop-admin-build_1 
 ```
-> 如果看不到 ecshopx-dev-docker_ecshop-admin-build_1 说明编译出错，可以Ctrl+C 关闭 docker-compose，然后再重新启动 docker-compose up
-
-
-## 访问环境
+如过有看到以下信息，说明管理端已经编译启动完成：
+```shell
+ecshop-admin-build_1  | > espier@1.0.0 dev /usr/share/nginx/html/app
+ecshop-admin-build_1  | > node build/dev-server.js
+ecshop-admin-build_1  |
+ecshop-admin-build_1  | > Starting dev server...
+ecshop-admin-build_1  |  DONE  Compiled successfully in 62395ms03:19:56
+ecshop-admin-build_1  |
+ecshop-admin-build_1  | > Listening at http://localhost:4000
+```
+如果看不到 ecshopx-dev-docker_ecshop-admin-build_1 说明编译出错，可通过以下命令重新启动：
+```shell
+docker start ecshopx-dev-docker_ecshop-admin-build_1
+```
 
 在完成以上几步之后，就可以访问开发环境了，具体访问地址如下：
 
@@ -126,4 +152,15 @@ docker logs ecshopx-dev-docker_ecshop-admin-build_1
 | phpmyadmin | <http://127.0.0.1:8004> | 
 | neo4j | <http://127.0.0.1:7474> |
 
+## 补充信息
+我们可以通过以下命令查看web容器名称：
+```shell
+docker ps | grep espier-bloated-web
+```
+> espier-bloated-web 是在 docker-compose.yml 中定义的服务的名称
 
+如果没问题，可以看下以下信息：
+```shell
+55763c866ca7  hub.ishopex.cn/espier-docker-library/php:7.2-composer-alpine3.10   "php-fpm"                2 hours ago         Up 2 hours          9000/tcp, 0.0.0.0:8085->8005/tcp                           ecshopx-dev-docker_espier-bloated-web_1
+```
+`ecshopx-dev-docker_espier-bloated-web_1` 就是实际运行的容器的名称。
