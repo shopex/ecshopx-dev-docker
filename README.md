@@ -55,22 +55,27 @@ docker-compose up
 ## 第三步：配置数据库
 
 ### 创建 MySQL 数据库
-为保证安装环境的统一性，本环境自带了 `phpmyadmin`，账号密码为: root root 。
+为保证安装环境的统一性，我们使用本环境自带的 `phpmyadmin` 来创建数据库：
 
-现在我们要创建程序需要的数据库，访问<http://localhost:8004> 。进入 phpmyadmin ，创建项目数据库 `ecshopx` ，字符集选用 `utf8mb4_general_ci`
+* 一、访问 <http://localhost:8004> 输入账号密码: root root，登录 phpmyadmin 
+
+* 二、创建项目数据库 `ecshopx` ，字符集选用 `utf8mb4_general_ci`
 
 > 在开发过程中，也可使用其他数据库工具创建数据库，连接地址为：localhost:8806
 
-### 修改 Neo4j 密码
-由于 Neo4j 不修改密码，无法通过 API 访问。所以我们需要通过浏览器客户端修改 Neo4j 的密码。
+### 修改 Neo4j 默认密码
+由于 Neo4j 无法通过默认密码访问 API ，所以需要修改其默认密码，步骤如下：
 
-访问<http://localhost:7474> 输入账号密码： `neo4j`  `neo4j`。 登录后会进入重置密码的页面，输入两遍新密码： `123456`，点击确认即可。
+* 一、访问 <http://localhost:7474> 输入账号密码：`neo4j` `neo4j`，登录 Neo4j
+
+* 二、登录后会进入重置密码的页面，输入原密码：`neo4j`，再输入两遍新密码：`123456`，点击确认即可
 
 
 ## 第四步：配置安装
 
-### 1、配置`.env`
-代码中不包`.env`，可以将 `.env.production` 复制改名为 `.env`。
+### 1、配置 `.env`
+代码中不包含`.env` 文件，可以将 `.env.production` 或 `.env.staging` 复制改名为 `.env`，
+其路径为`ecshopx-dev-docker/espier-bloated/.env`。
 
 如果你完全按照第二步来配置数据库，以下配置可以直接复制替换 `.env` 原有配置。
 * 修改数据库配置
