@@ -9,6 +9,7 @@ services:
     image: nginx:stable-alpine
     ports:
       - "8080:8080"
+      - "8088:8088"
       - "8084:8004"
     links:
       - espier-bloated-web
@@ -56,7 +57,7 @@ services:
       - webnet
 
   neo4j:
-    image: 'neo4j'
+    image: 'neo4j:3.5.8'
     ports:
       - '7474:7474'
       - '7687:7687'
