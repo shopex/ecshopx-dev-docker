@@ -16,11 +16,17 @@ cd ecshopx-dev-docker
 ```
 
 ## 第一步：初始化代码
+将管理端和API端的代码放到对应的目录中：
 
-将管理端的代码复制到 espier-retail-manage 目录中
+如果，你刚刚拿到代码还没有放到 git 中，可以直接将代码复制到到对应的目录中：
+* `管理端`的代码复制到 `espier-retail-manage` 目录
+* `API端`的代码复制到 `espier-bloated` 目录
 
-将api端的代码复制到到 espier-bloated 目录中
-
+如果，你已经将代码放到 git 中，可以这样操作：
+```
+git clone {管理端 git 地址}  espier-retail-manage
+git clone {API端 git 地址}  espier-bloated
+```
 完成后目录结构如下：
 ```shell
 ecshopx-dev-docker
