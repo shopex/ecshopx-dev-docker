@@ -8,16 +8,15 @@ services:
   espier-nginx-proxy:
     image: nginx:stable-alpine
     ports:
+      #按照需要修改你的端口  自己的端口：docker端口 请只改 自己的端口
       - "8080:8080"
-      - "8088:8088"
-      - "8084:8004"
     links:
       - espier-bloated-web
       - phpmyadmin
       - ecshop-admin-build
     volumes:
-      - "./config/nginx/default.conf:/etc/nginx/conf.d/default.conf"
-      - "./espier-retail-manage/app/dist/star:/usr/share/nginx/html"
+      - "./config/nginx/:/etc/nginx/conf.d"
+      - "${CODE_DATA}/:/usr/share/nginx/html"
     networks:
       - webnet
 
@@ -37,10 +36,10 @@ services:
       - redis
     volumes:
       - "./config/phpfpm/php-fpm.conf:/usr/local/etc/php-fpm.conf"
-      - "./config/phpfpm/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf"
       - "./config/phpfpm/php.ini:/usr/local/etc/php/php.ini"
+      #zl文件请自行修改当前目录下/config/phpfpm/docker-php-ext-swoole-compiler.ini中的swoole_license_files 不用重启，及时生效
       - "./config/phpfpm/docker-php-ext-swoole-compiler.ini:/usr/local/etc/php/conf.d/docker-php-ext-swoole-compiler.ini"
-      - "./espier-bloated:/app"
+      - "${CODE_DATA}:/app"
     networks:
       - webnet
 
@@ -52,18 +51,18 @@ services:
       - REDIS_REPLICATION_MODE=master
       - REDIS_PASSWORD=123456
     volumes:
-      - './data/redis:/bitnami'
+       - ${STORAGE_PATH}/redis:/bitnami
     networks:
       - webnet
 
   neo4j:
-    image: 'neo4j:3.5.8'
+    image: 'neo4j'
     ports:
       - '7474:7474'
       - '7687:7687'
 
     volumes:
-      - './data/neo4j:/data'
+      - ${STORAGE_PATH}/neo4j:/data
     networks:
       - webnet
 
@@ -73,7 +72,7 @@ services:
     ports:
       - "8806:3306"
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - ${STORAGE_PATH}/mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
     networks:
@@ -90,6 +89,7 @@ services:
     networks:
       - webnet    
 
+  ### 不同版本对应不同的node版本，推荐使用12，可以使用13
   ecshop-admin-build:
     image: node:12-alpine
     environment:
@@ -97,12 +97,13 @@ services:
       IS_SAAS: "false"
       PORT: 4000
       BUILD_DIR: /usr/share/nginx/html/app
-      NPM_CACHE_DIR: /tmp
     entrypoint:
-      - sh 
+      - sh
+      #此处的编译脚本请按照实际项目填写 /usr/share/nginx/html 这是映射目录，不要动，改后边的 直接watch 不适合一个docker-composer满足不同项目，请自行更改composer文件
       - /usr/share/nginx/html/docker/build_dev.sh
     volumes:
-      - "./espier-retail-manage:/usr/share/nginx/html"
+      - "${CODE_DATA}/espier-shop:/usr/share/nginx/html"
+      - "${STORAGE_PATH}/node:/usr/share/nginx/node"
     networks:
       - webnet
 #- "./bloated/files/scheduler/crontabs/root:/var/spool/cron/crontabs/root"
