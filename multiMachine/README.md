@@ -12,7 +12,8 @@ EcshopX 采用前后端分离的方式开发，代码结构由后端api和多个
 开始前，需要确保本地已经安装 docker。然后先将 docker 开发环境的脚本 git clone 到本地：
 ```shell
 git clone https://github.com/shopex/ecshopx-dev-docker.git .
-//切换分支
+
+#切换分支
 git checkout -b develop
 
 cd multiMachine
