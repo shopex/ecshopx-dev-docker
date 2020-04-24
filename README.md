@@ -7,8 +7,10 @@ EcshopX 采用前后端分离的方式开发，代码结构由后端api和多个
 前端包含管理端、小程序、PC端和H5端。
 
 本环境目前只包含了web和管理的部署，后续会根据需求将其他环境加入。
-##版本说明
-当前为单机版本，需装多机版，请访问一下链接
+
+## 版本说明
+当前为单机版本，需装多机版，请访问一下链接: 
+
 [多机版](https://github.com/shopex/ecshopx-dev-docker/tree/develop/multiMachine)
 
 ## 准备
