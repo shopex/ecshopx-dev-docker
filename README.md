@@ -30,7 +30,8 @@ cd ecshopx-dev-docker
 如果，你已经将代码放到 git 中，可以这样操作：
 ```
 git clone {管理端 git 地址}  espier-retail-manage
-git clone {API端 git 地址}  espier-bloated
+git clone {API端 git 地址}   espier-bloated
+git clone {小程序 git 地址}  espier-micro-mall
 ```
 完成后目录结构如下：
 ```shell
@@ -46,6 +47,9 @@ ecshopx-dev-docker
     │   ├── config
     │   ├── ...
     │   └── README.md
+    ├── espier-micro-mall
+    │   ├── app 
+    │   └── README.md 
     ├── docker-compose.yml
     └── README.md
 ```
@@ -168,6 +172,41 @@ docker start ecshopx-dev-docker_ecshop-admin-build_1
 | phpmyadmin | <http://127.0.0.1:8004> | 
 | neo4j | <http://127.0.0.1:7474> |
 
+## 小程序端配置
+进入后台，创建小程序。
+### 配置小程序
+如果没有直播插件权限，需要通过以下注释以下代码关闭
+espier-micro-mall/src/app.js
+```
+
+        "plugins": {
+          "live-player-plugin": {
+            "version": "1.0.7", // 填写该直播组件版本号
+            "provider": "wx2b03c6e691cd7370" // 必须填该直播组件appid
+          }
+        }
+```
+
+在 espier-micro-mall/config/host.js 配置小程序地址
+```
+  weapp: {
+    prod: '127.0.0.1:8080',
+    preissue: '127.0.0.1:8080',
+    test: '127.0.0.1:8080'
+  },
+```
+本地开发在 espier-micro-mall/config/index.js，去掉 https 地址：
+```
+`https://${API_HOST}/api/h5app/wxapp`,
+```
+改为
+```
+`http://${API_HOST}/api/h5app/wxapp`,
+```
+### 安装编译
+```
+npm install && npm run dev:weapp
+```
 ## 补充信息
 我们可以通过以下命令查看web容器名称：
 ```shell
