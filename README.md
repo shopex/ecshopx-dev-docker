@@ -203,6 +203,26 @@ espier-micro-mall/src/app.js
 ```
 `http://${API_HOST}/api/h5app/wxapp`,
 ```
+
+将 espier-micro-mall/src/ext.json 中的 extAppid 和 appid 改为自己的 id
+
+```
+{
+  "extEnable": true,
+  "extAppid": "your appid",
+  "ext": {
+    "company_id": "1",
+    "appid": "your appid",
+    "wxa_name": "通用小程序"
+  },
+  "window": {
+      "backgroundTextStyle": "light",
+      "navigationBarBackgroundColor": "#fff",
+      "navigationBarTitleText": "微商城",
+      "navigationBarTextStyle": "black"
+  }
+}
+```
 ### 安装编译
 ```
 npm install && npm run dev:weapp
