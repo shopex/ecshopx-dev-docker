@@ -2,11 +2,9 @@
 
 EcshopX 采用前后端分离的方式开发，代码结构由后端api和多个前端组成。
 
-后端api由lumen开发，部署时包含了web、scheduler、worker和websocket。
+后端api由lumen开发，部署时包含了web、scheduler、worker。
 
 前端包含管理端、小程序、PC端和H5端。
-
-本环境目前只包含了web和管理的部署，后续会根据需求将其他环境加入。
 
 ## 版本说明
 当前为单机版本，需装多机版，请访问一下链接: 
@@ -24,41 +22,54 @@ cd ecshopx-dev-docker
 将管理端和API端的代码放到对应的目录中：
 
 如果，你刚刚拿到代码还没有放到 git 中，可以直接将代码复制到到对应的目录中：
-* `管理端`的代码复制到 `espier-retail-manage` 目录
-* `API端`的代码复制到 `espier-bloated` 目录
+* `管理端`的代码复制到 `ecshopx-admin` 目录
+* `API端`的代码复制到 `ecshopx-api` 目录
+* `PC端`的代码复制到 `ecshopx-pc` 目录
+* `H5端`的代码复制到 `ecshopx-vshop` 目录
 
 如果，你已经将代码放到 git 中，可以这样操作：
 ```
-git clone {管理端 git 地址}  espier-retail-manage
-git clone {API端 git 地址}   espier-bloated
-git clone {小程序 git 地址}  espier-micro-mall
+git clone {管理端 git 地址}  ecshopx-admin
+git clone {API端 git 地址}  ecshopx-api
+git clone {PC端 git 地址}  ecshopx-pc
+git clone {H5端 git 地址}  ecshopx-vshop
 ```
 完成后目录结构如下：
 ```shell
 ecshopx-dev-docker
     ├── config
-    ├── data
-    ├── espier-retail-manage
-    │   ├── app
-    │   └── docker
-    ├── espier-bloated
+    ├── ecshopx-admin
+    │   ├── ... 
+    │   ├── .env
+    │   └── README.md
+    ├── ecshopx-api
     │   ├── app  
     │   ├── bootstrap
     │   ├── config
     │   ├── ...
+    │   ├── src
+    │   └── .env
+    ├── ecshopx-pc
+    │   ├── ... 
+    │   ├── .env
     │   └── README.md
-    ├── espier-micro-mall
-    │   ├── app 
-    │   └── README.md 
+    ├── ecshopx-vshop
+    │   ├── ... 
+    │   ├── .env
+    │   └── README.md
     ├── docker-compose.yml
     └── README.md
 ```
-### 配置管理端 api 地址
-在 `espier-retail-manage/app/config/dev.env.js` 中配置后端 api 地址：
+### 配置前端 api 地址
+在前端代码的 `.env` 中配置后端 api 地址：
 
 ```js
 BASE_API: '"api"',
 ```
+
+### 编译前端代码
+在docker所在主机安装好node，然后在本地按照前端代码包里面的README中的步骤编译代码
+
 ## 第二步：启动开发环境
 在ecshopx-dev-docker下执行
 ```
@@ -72,25 +83,15 @@ docker-compose up
 ### 创建 MySQL 数据库
 为保证安装环境的统一性，我们使用本环境自带的 `phpmyadmin` 来创建数据库：
 
-* 一、访问 <http://localhost:8004> 输入账号密码: root root，登录 phpmyadmin 
+* 一、访问 <http://127.0.0.1:8083> 输入账号密码: root root，登录 phpmyadmin 
 
 * 二、创建项目数据库 `ecshopx` ，字符集选用 `utf8mb4_general_ci`
-
-> 在开发过程中，也可使用其他数据库工具创建数据库，连接地址为：localhost:8806
-
-### 修改 Neo4j 默认密码
-由于 Neo4j 无法通过默认密码访问 API ，所以需要修改其默认密码，步骤如下：
-
-* 一、访问 <http://localhost:7474> 输入账号密码：`neo4j` `neo4j`，登录 Neo4j
-
-* 二、登录后会进入重置密码的页面，输入原密码：`neo4j`，再输入两遍新密码：`123456`，点击确认即可
-
 
 ## 第四步：配置安装
 
 ### 1、配置 `.env`
-代码中不包含`.env` 文件，可以将 `.env.production` 或 `.env.staging` 复制改名为 `.env`，
-其路径为`ecshopx-dev-docker/espier-bloated/.env`。
+代码中不包含`.env` 文件，可以将 `.env.example` 复制改名为 `.env`，
+其路径为`ecshopx-dev-docker/ecshopx-api/.env`。
 
 如果你完全按照第二步来配置数据库，以下配置可以直接复制替换 `.env` 原有配置。
 * 修改数据库配置
@@ -109,58 +110,23 @@ REDIS_HOST=redis
 REDIS_PORT=6379
 REDIS_PASSWORD=123456
 ```
-* 修改neo4j配置
-```
-NEO4J_DEFAULT_PROTOCOL=http
-NEO4J_DEFAULT_HOST=neo4j
-NEO4J_DEFAULT_PORT=7474
-NEO4J_DEFAULT_USERNAME=neo4j
-NEO4J_DEFAULT_PASSWORD=123456
-```
 
-### 2、composer&&migrate
+### 2、migrate
 
 由于 API 的环境在 docker 的容器内，所以开发时，需要进入到容器中来执行相关命令。
 
 #### 进入容器
 ```shell
-docker exec -it ecshopx-dev-docker_espier-bloated-web_1 sh 
+docker exec -it ecshopx-dev-docker_ecshopx-api_1 sh 
 ```
-进入容器之后，会自动进入代码目录 `/app`，所以可以直接运行命令：
-
-#### 安装依赖
-```
-composer install
-```
+进入容器之后，会自动进入代码目录 `/data/httpd`，所以可以直接运行命令：
 
 #### 初始化数据库表
 ```
-php ./artisan doctrine:migrations:migrate
+php artisan doctrine:migrations:migrate
 ```
 
 ## 访问环境
-
-在访问环境前，请先确认管理端代码是否编译完成
-```shell
-#查看管理端容器名称
-docker ps | grep ecshop-admin-build
-#查看日志
-docker logs ecshopx-dev-docker_ecshop-admin-build_1 
-```
-如过有看到以下信息，说明管理端已经编译启动完成：
-```shell
-ecshop-admin-build_1  | > espier@1.0.0 dev /usr/share/nginx/html/app
-ecshop-admin-build_1  | > node build/dev-server.js
-ecshop-admin-build_1  |
-ecshop-admin-build_1  | > Starting dev server...
-ecshop-admin-build_1  |  DONE  Compiled successfully in 62395ms03:19:56
-ecshop-admin-build_1  |
-ecshop-admin-build_1  | > Listening at http://localhost:4000
-```
-如果看不到 ecshopx-dev-docker_ecshop-admin-build_1 说明编译出错，可通过以下命令重新启动：
-```shell
-docker start ecshopx-dev-docker_ecshop-admin-build_1
-```
 
 在完成以上几步之后，就可以访问开发环境了，具体访问地址如下：
 
@@ -168,74 +134,4 @@ docker start ecshopx-dev-docker_ecshop-admin-build_1
 | - | - |
 | 管理端 | <http://127.0.0.1:8080/> | 
 | 后端api | <http://127.0.0.1:8080/api> | 
-| 微信授权 | <http://127.0.0.1:8080/wechatAuth> | 
-| phpmyadmin | <http://127.0.0.1:8004> | 
-| neo4j | <http://127.0.0.1:7474> |
-
-## 小程序端配置
-进入后台，创建小程序。
-### 配置小程序
-如果没有直播插件权限，需要通过以下注释以下代码关闭
-espier-micro-mall/src/app.js
-```
-
-        "plugins": {
-          "live-player-plugin": {
-            "version": "1.0.7", // 填写该直播组件版本号
-            "provider": "wx2b03c6e691cd7370" // 必须填该直播组件appid
-          }
-        }
-```
-
-在 espier-micro-mall/config/host.js 配置小程序地址
-```
-  weapp: {
-    prod: '127.0.0.1:8080',
-    preissue: '127.0.0.1:8080',
-    test: '127.0.0.1:8080'
-  },
-```
-本地开发在 espier-micro-mall/config/index.js，去掉 https 地址：
-```
-`https://${API_HOST}/api/h5app/wxapp`,
-```
-改为
-```
-`http://${API_HOST}/api/h5app/wxapp`,
-```
-
-将 espier-micro-mall/src/ext.json 中的 extAppid 和 appid 改为自己的 id
-
-```
-{
-  "extEnable": true,
-  "extAppid": "your appid",
-  "ext": {
-    "company_id": "1",
-    "appid": "your appid",
-    "wxa_name": "通用小程序"
-  },
-  "window": {
-      "backgroundTextStyle": "light",
-      "navigationBarBackgroundColor": "#fff",
-      "navigationBarTitleText": "微商城",
-      "navigationBarTextStyle": "black"
-  }
-}
-```
-### 安装编译
-```
-npm install && npm run dev:weapp
-```
-## 补充信息
-我们可以通过以下命令查看web容器名称：
-```shell
-docker ps | grep espier-bloated-web
-```
-> espier-bloated-web 是在 docker-compose.yml 中定义的服务的名称
-
-如果没问题，可以看下以下信息：
-```shell
-55763c866ca7  hub.ishopex.cn/espier-docker-library/php:7.2-composer-alpine3.10   "php-fpm"                2 hours ago         Up 2 hours          9000/tcp, 0.0.0.0:8085->8005/tcp                           ecshopx-dev-docker_espier-bloated-web_1
-```
-`ecshopx-dev-docker_espier-bloated-web_1` 就是实际运行的容器的名称。
+| phpmyadmin | <http://127.0.0.1:8083> | 

@@ -1,79 +1,53 @@
-version: "3.3"
+version: "3.4"
 
 networks:
   webnet:
+    driver: bridge
 
 services:
-##nginx proxy
-  espier-nginx-proxy:
+  nginx:
     image: nginx:latest
     ports:
-      - "8080:8080"
-      - "8088:8088"
-      - "8084:8004"
+      - "8080:80"
+      - "8081:81"
+      - "8082:82"
     links:
-      - espier-bloated-web
+      - ecshopx-api
       - phpmyadmin
-      - ecshop-admin-build
     volumes:
       - "./config/nginx/default.conf:/etc/nginx/conf.d/default.conf"
-      - "./espier-retail-manage/app/dist/star:/usr/share/nginx/html"
+      - "./ecshopx-admin:/data/httpd/ecshopx-admin"
+      - "./ecshopx-pc:/data/httpd/ecshopx-pc"
+      - "./ecshopx-vshop:/data/httpd/ecshopx-vshop"
     networks:
       - webnet
 
-###espier-bloated-web
-  espier-bloated-web:
-    environment:
-      APP_ENV: dev
-      CONTAINER_ROLE: web
+  ecshopx-api:
+    build:
+      context: ./ecshopx-api
+      dockerfile: ./docker-new/Dockerfile
     entrypoint: php-fpm
-    # replace username/repo:tag with your name and image details
-    image: "${PHP_COMPOSER_IMAGE}"
-    ports:
-      - "8085:8005" 
     links:
       - mysql
-      - neo4j
       - redis
     volumes:
-      - "./config/phpfpm/php-fpm.conf:/usr/local/etc/php-fpm.conf"
-      - "./config/phpfpm/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf"
-      - "./config/phpfpm/php.ini:/usr/local/etc/php/php.ini"
-      - "./config/phpfpm/docker-php-ext-swoole-compiler.ini:/usr/local/etc/php/conf.d/docker-php-ext-swoole-compiler.ini"
-      - "./espier-bloated:/app"
+      - "./config/php/conf.d/docker-php-ext-opcache.ini:/usr/local/etc/php/conf.d/docker-php-ext-opcache.ini"
+      - "./ecshopx-api/.env:/data/httpd/.env:ro"
+      - "./ecshopx-api/src:/data/httpd/src"
     networks:
       - webnet
+    dns: 8.8.8.8
 
   redis:
     image: 'bitnami/redis:4.0.14-r61'
-    ports:
-      - '6379'
     environment:
       - REDIS_REPLICATION_MODE=master
       - REDIS_PASSWORD=123456
-    volumes:
-      - './data/redis:/bitnami'
-    networks:
-      - webnet
-
-  neo4j:
-    image: 'neo4j:3.5.8'
-    ports:
-      - '7474:7474'
-      - '7687:7687'
-
-    volumes:
-      - './data/neo4j:/data'
     networks:
       - webnet
 
   mysql:
     image: mysql:5.7
-    hostname: mysql
-    ports:
-      - "8806:3306"
-    volumes:
-      - ./data/mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
     networks:
@@ -82,27 +56,10 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     ports:
-      - "8004:80"
+      - "8083:80"
     links:
       - mysql
     environment:
       - PMA_HOST=mysql
     networks:
-      - webnet    
-
-  ecshop-admin-build:
-    image: node:12-alpine
-    environment:
-      PRODUCT_MODEL: standard
-      IS_SAAS: "false"
-      PORT: 4000
-      BUILD_DIR: /usr/share/nginx/html/app
-      NPM_CACHE_DIR: /tmp
-    entrypoint:
-      - sh 
-      - /usr/share/nginx/html/docker/build_dev.sh
-    volumes:
-      - "./espier-retail-manage:/usr/share/nginx/html"
-    networks:
       - webnet
-#- "./bloated/files/scheduler/crontabs/root:/var/spool/cron/crontabs/root"
